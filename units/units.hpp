@@ -7,14 +7,16 @@ SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 #include "unit_definitions.hpp"
 
-#include <cmath>
+//#include <cmath>
 #include <string>
 #include <type_traits>
 #include <utility>
+#include "expression.h"
 
 #ifdef ENABLE_UNIT_MAP_ACCESS
 #include <unordered_map>
 #endif
+
 
 #if __cplusplus >= 201402L || (defined(_MSC_VER) && _MSC_VER >= 1910)
 #define UNITS_CPP14_CONSTEXPR_OBJECT constexpr
@@ -59,8 +61,8 @@ double convert(const UX& start, const UX2& result)
 }
 
 /// Convert a value from one unit base to another
-template<typename UX, typename UX2>
-double convert(double val, const UX& start, const UX2& result)
+template<typename UX, typename UX2, typename T=double>
+T convert(T val, const UX& start, const UX2& result)
 {
     static_assert(
         std::is_same<UX, unit>::value || std::is_same<UX, precise_unit>::value,
@@ -74,23 +76,31 @@ double convert(double val, const UX& start, const UX2& result)
     }
     if ((start.has_e_flag() || result.has_e_flag()) &&
         start.has_same_base(result.base_units())) {
-        double converted_val = detail::convertFlaggedUnits(val, start, result);
-        if (!std::isnan(converted_val)) {
-            return converted_val;
-        }
+        T converted_val = detail::convertFlaggedUnits(val, start, result);
+        if constexpr (std::is_same<T, double>::value) {
+            if (!std::isnan(converted_val)) {
+                return converted_val;
+            };
+        } else if (std::is_same<T, expression>::value) {
+            if (!converted_val.isnan()) {
+                return converted_val;
+            };
+        };
+
     }
+
     if (start.is_equation() || result.is_equation()) {
         if (!start.base_units().equivalent_non_counting(result.base_units())) {
             return constants::invalid_conversion;
         }
-        double keyval = precise::equations::convert_equnit_to_value(
+        T keyval = precise::equations::convert_equnit_to_value(
             val, start.base_units());
-        keyval = keyval * start.multiplier() / result.multiplier();
+        keyval = keyval * T(start.multiplier() / result.multiplier());
         return precise::equations::convert_value_to_equnit(
             keyval, result.base_units());
     }
     if (start.base_units() == result.base_units()) {
-        return val * start.multiplier() / result.multiplier();
+        return val * T(start.multiplier() / result.multiplier());
     }
     // check if both are pu since this doesn't require knowing a base unit
     if (start.is_per_unit() &&
@@ -100,11 +110,18 @@ double convert(double val, const UX& start, const UX2& result)
             // puXX already
             return val;
         }
-        double converted_val = puconversion::knownConversions(
+        T converted_val = puconversion::knownConversions(
             val, start.base_units(), result.base_units());
-        if (!std::isnan(converted_val)) {
-            return converted_val;
-        }
+        if constexpr (std::is_same<T, double>::value) {
+            if (!std::isnan(converted_val)) {
+                return converted_val;
+            };
+        } else if (std::is_same<T, expression>::value) {
+            if (!converted_val.isnan())
+                {
+                return converted_val;
+            };
+        };
     } else if (start.is_per_unit() || result.is_per_unit()) {
         double genBase =
             puconversion::assumedBase(unit_cast(start), unit_cast(result));
@@ -121,14 +138,20 @@ double convert(double val, const UX& start, const UX2& result)
     if (base_start.has_same_base(base_result)) {
         // ignore i flag and e flag, special cases have been dealt with already,
         // so those are just markers
-        return val * start.multiplier() / result.multiplier();
+        return val * T(start.multiplier() / result.multiplier());
     }
     // deal with some counting conversions
     if (base_start.equivalent_non_counting(base_result)) {
-        double converted_val = detail::convertCountingUnits(val, start, result);
-        if (!std::isnan(converted_val)) {
-            return converted_val;
-        }
+        T converted_val = detail::convertCountingUnits(val, start, result);
+        if constexpr (std::is_same<T, double>::value) {
+            if (!std::isnan(converted_val)) {
+                return converted_val;
+            };
+        } else if (std::is_same<T, expression>::value) {
+            if (!converted_val.isnan()) {
+                return converted_val;
+            };
+        };
     }
     // check for inverse units
     if (base_start.has_same_base(base_result.inv())) {
@@ -137,11 +160,17 @@ double convert(double val, const UX& start, const UX2& result)
         return 1.0 / (val * start.multiplier() * result.multiplier());
     }
     if (start.has_e_flag() || result.has_e_flag()) {
-        double converted_val =
+        T converted_val =
             detail::extraValidConversions(val, start, result);
-        if (!std::isnan(converted_val)) {
-            return converted_val;
-        }
+        if constexpr (std::is_same<T, double>::value) {
+            if (!std::isnan(converted_val)) {
+                return converted_val;
+            };
+        } else if (std::is_same<T, expression>::value) {
+            if (!converted_val.isnan()) {
+                return converted_val;
+            };
+        };
     }
     // this is the last chance and will return invalid_result if it doesn't find
     // a match
@@ -150,8 +179,8 @@ double convert(double val, const UX& start, const UX2& result)
 
 /// Convert a value from one unit base to another potentially involving pu base
 /// values
-template<typename UX, typename UX2>
-double convert(double val, const UX& start, const UX2& result, double baseValue)
+template<typename UX, typename UX2,typename T=double>
+T convert(T val, const UX& start, const UX2& result, double baseValue)
 {
     static_assert(
         std::is_same<UX, unit>::value || std::is_same<UX, precise_unit>::value,
@@ -164,7 +193,7 @@ double convert(double val, const UX& start, const UX2& result, double baseValue)
         return val;
     }
     if (start.base_units() == result.base_units()) {
-        return val * start.multiplier() / result.multiplier();
+        return val * T(start.multiplier() / result.multiplier());
     }
 
     // if the per unit is equivalent, no baseValue is needed so give to first
@@ -172,11 +201,17 @@ double convert(double val, const UX& start, const UX2& result, double baseValue)
     if (start.is_per_unit() == result.is_per_unit()) {
         if ((start.has_e_flag() || result.has_e_flag()) &&
             start.has_same_base(result.base_units())) {
-            double converted_val =
+            T converted_val =
                 detail::convertFlaggedUnits(val, start, result, baseValue);
-            if (!std::isnan(converted_val)) {
-                return converted_val;
-            }
+            if constexpr (std::is_same<T, double>::value) {
+                if (!std::isnan(converted_val)) {
+                    return converted_val;
+                };
+            } else if (std::is_same<T, expression>::value) {
+                if (!converted_val.isnan()) {
+                    return converted_val;
+                };
+            };
         }
         return convert(val, start, result);
     }
@@ -184,11 +219,11 @@ double convert(double val, const UX& start, const UX2& result, double baseValue)
     if (start.has_same_base(result.base_units()) || pu == unit_cast(start) ||
         pu == unit_cast(result)) {
         if (start.is_per_unit()) {
-            val = val * baseValue;
+            val = val * T(baseValue);
         }
-        val = val * start.multiplier() / result.multiplier();
+        val = val * T(start.multiplier() / result.multiplier());
         if (result.is_per_unit()) {
-            val /= baseValue;
+            val = val / T(baseValue);
         }
         return val;
     }
@@ -199,9 +234,9 @@ double convert(double val, const UX& start, const UX2& result, double baseValue)
 
 /// Convert a value from one unit base to another involving power system units
 /// the basePower and base voltage are used as the basis values
-template<typename UX, typename UX2>
-double convert(
-    double val,
+template<typename UX, typename UX2,typename T=double>
+T convert(
+    T val,
     const UX& start,
     const UX2& result,
     double basePower,
@@ -225,12 +260,12 @@ double convert(
         if (std::isnan(base)) {  // no known base conversions so this means we
                                  // are converting bases
             if (start.is_per_unit() && start == result) {
-                return val * basePower / baseVoltage;
+                return val * T(basePower / baseVoltage);
             }
             if (start.is_per_unit() &&
                 start.has_same_base(result.base_units())) {
-                return val * basePower * start.multiplier() / baseVoltage /
-                    result.multiplier();
+                return val * T(basePower * start.multiplier() / baseVoltage /
+                    result.multiplier());
             }
         }
         return convert(val, start, result);
@@ -243,18 +278,18 @@ double convert(
         auto base = puconversion::generate_base(
             result.base_units(), basePower, baseVoltage);
         if (start.is_per_unit()) {
-            val = val * base;
+            val = val * T(base);
         }
-        val = val * start.multiplier() / result.multiplier();
+        val = val * T(start.multiplier() / result.multiplier());
         if (result.is_per_unit()) {
-            val /= base;
+            val = val / T(base);
         }
         return val;
     }
     if (result.is_per_unit()) {
         auto base = puconversion::generate_base(
             start.base_units(), basePower, baseVoltage);
-        auto puVal = val / base;
+        T puVal = val / T(base);
         if (pu == unit_cast(result)) {  // if result is generic pu
             return puVal * start.multiplier();
         }
@@ -266,7 +301,7 @@ double convert(
         result.base_units(), basePower, baseVoltage);
     base *= start.multiplier();
     if (pu == unit_cast(start)) {  // if start is generic pu
-        return val * base;
+        return val * T(base);
     }
     return convert(val, start, result * pu) * base;
 }

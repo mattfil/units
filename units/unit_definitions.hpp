@@ -13,6 +13,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <array>
 #include <cstdlib>
 #include <limits>
+#include <iostream>
 
 namespace UNITS_NAMESPACE {
 /// Constants used in definitions of units
@@ -1115,164 +1116,181 @@ namespace precise {
         }
 
         /// convert an equation unit to a single value
-        inline double
-            convert_equnit_to_value(double val, const detail::unit_data& UT)
+        template<typename T=double>
+        inline T convert_equnit_to_value(T val, const detail::unit_data& UT)
         {
-            if (!UT.is_equation()) {
-                return val;
-            }
-            int logtype = custom::eq_type(UT);
-            switch (logtype) {
-                case 0:
-                case 10:
-                    return std::pow(10.0, val);
-                case 1:
-                    return std::exp(val / ((is_power_unit(UT)) ? 0.5 : 1.0));
-                case 2:
-                    return std::pow(
-                        10.0, val / ((is_power_unit(UT)) ? 1.0 : 2.0));
-                case 3:
-                    return std::pow(
-                        10.0, val / ((is_power_unit(UT)) ? 10.0 : 20.0));
-                case 4:
-                    return std::pow(10.0, -val);
-                case 5:
-                    return std::pow(100.0, -val);
-                case 6:
-                    return std::pow(1000.0, -val);
-                case 7:
-                    return std::pow(50000.0, -val);
-                case 8:
-                    return std::exp2(val);
-                case 9:
-                    return std::exp(val);
-                case 11:
-                    return std::pow(10.0, val / 10.0);
-                case 12:
-                    return std::pow(10.0, val / 2.0);
-                case 13:
-                    return std::pow(10.0, val / 20.0);
-                case 14:
-                    return std::pow(3.0, val);
-                case 15:
-                    return std::exp(val / 0.5);
-                case 16:  // API Gravity
-                    return 141.5 / (val + 131.5);
-                case 17:  // degrees Baume Light
-                    return 140.0 / (130.0 + val);
-                case 18:  // degrees Baume Heavy
-                    return 145.0 / (145.0 - val);
-                case 22:  // saffir simpson hurricane wind scale
-                {
-                    double out = -0.17613636364;
-                    out = std::fma(out, val, 2.88510101010);
-                    out = std::fma(out, val, -14.95265151515);
-                    out = std::fma(out, val, 47.85191197691);
-                    out = std::fma(out, val, 38.90151515152);
-                    return out;
-                }
-                case 23: {  // Beaufort wind scale
-                    double out = 0.00177396133;
-                    out = std::fma(out, val, -0.05860071301);
-                    out = std::fma(out, val, 0.93621452077);
-                    out = std::fma(out, val, 0.24246097040);
-                    out = std::fma(out, val, -0.12475759535);
-                    return out;
-                }
-                case 24:  // Fujita scale
-                    return 14.1 * std::pow(val + 2.0, 1.5);
-                case 27:  // prism diopter
-                    return std::atan(val / 100.0);
-                case 29:  // moment magnitude scale
-                    return std::pow(10.0, (val + 10.7) * 1.5);
-                case 30:
-                    return std::pow(10.0, (val + 3.2) * 1.5);
-                default:
+            if constexpr (std::is_same<T, double>::value) {
+                if (!UT.is_equation()) {
                     return val;
+                }
+                int logtype = custom::eq_type(UT);
+                switch (logtype) {
+                    case 0:
+                    case 10:
+                        return std::pow(10.0, val);
+                    case 1:
+                        return std::exp(
+                            val / ((is_power_unit(UT)) ? 0.5 : 1.0));
+                    case 2:
+                        return std::pow(
+                            10.0, val / ((is_power_unit(UT)) ? 1.0 : 2.0));
+                    case 3:
+                        return std::pow(
+                            10.0, val / ((is_power_unit(UT)) ? 10.0 : 20.0));
+                    case 4:
+                        return std::pow(10.0, -val);
+                    case 5:
+                        return std::pow(100.0, -val);
+                    case 6:
+                        return std::pow(1000.0, -val);
+                    case 7:
+                        return std::pow(50000.0, -val);
+                    case 8:
+                        return std::exp2(val);
+                    case 9:
+                        return std::exp(val);
+                    case 11:
+                        return std::pow(10.0, val / 10.0);
+                    case 12:
+                        return std::pow(10.0, val / 2.0);
+                    case 13:
+                        return std::pow(10.0, val / 20.0);
+                    case 14:
+                        return std::pow(3.0, val);
+                    case 15:
+                        return std::exp(val / 0.5);
+                    case 16:  // API Gravity
+                        return 141.5 / (val + 131.5);
+                    case 17:  // degrees Baume Light
+                        return 140.0 / (130.0 + val);
+                    case 18:  // degrees Baume Heavy
+                        return 145.0 / (145.0 - val);
+                    case 22:  // saffir simpson hurricane wind scale
+                    {
+                        double out = -0.17613636364;
+                        out = std::fma(out, val, 2.88510101010);
+                        out = std::fma(out, val, -14.95265151515);
+                        out = std::fma(out, val, 47.85191197691);
+                        out = std::fma(out, val, 38.90151515152);
+                        return out;
+                    }
+                    case 23: {  // Beaufort wind scale
+                        double out = 0.00177396133;
+                        out = std::fma(out, val, -0.05860071301);
+                        out = std::fma(out, val, 0.93621452077);
+                        out = std::fma(out, val, 0.24246097040);
+                        out = std::fma(out, val, -0.12475759535);
+                        return out;
+                    }
+                    case 24:  // Fujita scale
+                        return 14.1 * std::pow(val + 2.0, 1.5);
+                    case 27:  // prism diopter
+                        return std::atan(val / 100.0);
+                    case 29:  // moment magnitude scale
+                        return std::pow(10.0, (val + 10.7) * 1.5);
+                    case 30:
+                        return std::pow(10.0, (val + 3.2) * 1.5);
+                    default:
+                        return val;
+                }
+            }
+            else
+            {
+                std::runtime_error("to be implemented...\n");
+                return constants::invalid_conversion;
             }
         }
 
         /// convert a value to an equation value
-        inline double
-            convert_value_to_equnit(double val, const detail::unit_data& UT)
+        template<typename T>
+        inline T convert_value_to_equnit(T val, const detail::unit_data& UT)
         {
-            if (!UT.is_equation()) {
-                return val;
-            }
-            int logtype = custom::eq_type(UT);
-            if ((logtype < 16) && (val <= 0.0)) {
-                return constants::invalid_conversion;
-            }
-
-            switch (logtype) {
-                case 0:
-                case 10:
-                    return std::log10(val);
-                case 1:
-                    return ((is_power_unit(UT)) ? 0.5 : 1.0) * (std::log)(val);
-                case 2:
-                    return ((is_power_unit(UT)) ? 1.0 : 2.0) * std::log10(val);
-                case 3:
-                    return ((is_power_unit(UT)) ? 10.0 : 20.0) *
-                        std::log10(val);
-                case 4:
-                    return -std::log10(val);
-                case 5:
-                    return -std::log10(val) / 2.0;
-                case 6:
-                    return -std::log10(val) / 3.0;
-                case 7:
-                    return -std::log10(val) / std::log10(50000);
-                case 8:
-                    return (std::log2)(val);
-                case 9:
-                    return (std::log)(val);
-                case 11:
-                    return 10.0 * std::log10(val);
-                case 12:
-                    return 2.0 * std::log10(val);
-                case 13:
-                    return 20.0 * std::log10(val);
-                case 14:
-                    return std::log10(val) / std::log10(3);
-                case 15:
-                    return 0.5 * (std::log)(val);
-                case 16:  // API Gravity
-                    return 141.5 / (val)-131.5;
-                case 17:  // degree Baume Light
-                    return 140.0 / val - 130;
-                case 18:  // degree Baume Heavy
-                    return 145.0 * (1.0 - 1.0 / val);
-                case 22:  // saffir simpson hurricane scale from wind speed
-                {  // using horners method on polynomial approximation of
-                   // saffir-simpson wind speed scale
-                    double out = 1.75748569529e-10;
-                    out = std::fma(out, val, -9.09204303833e-08);
-                    out = std::fma(out, val, 1.52274455780e-05);
-                    out = std::fma(out, val, -7.73787973277e-04);
-                    out = std::fma(out, val, 2.81978682167e-02);
-                    out = std::fma(out, val, -6.67563481438e-01);
-                    return out;
-                }
-                case 23: {  // Beaufort wind scale
-                    double out = 2.18882896425e-08;
-                    out = std::fma(out, val, -4.78236313769e-06);
-                    out = std::fma(out, val, 3.91121840061e-04);
-                    out = std::fma(out, val, -1.52427367162e-02);
-                    out = std::fma(out, val, 4.24089585061e-01);
-                    out = std::fma(out, val, 4.99241689370e-01);
-                    return out;
-                }
-                case 24:  // fujita scale
-                    return std::pow(val / 14.1, 2.0 / 3.0) - 2.0;
-                case 27:  // prism diopter
-                    return 100.0 * std::tan(val);
-                case 29:  // moment magnitude scale
-                    return 2.0 / 3.0 * std::log10(val) - 10.7;
-                case 30:  // energy magnitude scale
-                    return 2.0 / 3.0 * std::log10(val) - 3.2;
-                default:
+            if constexpr (std::is_same<T, double>::value) {
+                if (!UT.is_equation()) {
                     return val;
+                }
+                int logtype = custom::eq_type(UT);
+                if ((logtype < 16) && (val <= 0.0)) {
+                    return constants::invalid_conversion;
+                }
+
+                switch (logtype) {
+                    case 0:
+                    case 10:
+                        return std::log10(val);
+                    case 1:
+                        return ((is_power_unit(UT)) ? 0.5 : 1.0) *
+                            (std::log)(val);
+                    case 2:
+                        return ((is_power_unit(UT)) ? 1.0 : 2.0) *
+                            std::log10(val);
+                    case 3:
+                        return ((is_power_unit(UT)) ? 10.0 : 20.0) *
+                            std::log10(val);
+                    case 4:
+                        return -std::log10(val);
+                    case 5:
+                        return -std::log10(val) / 2.0;
+                    case 6:
+                        return -std::log10(val) / 3.0;
+                    case 7:
+                        return -std::log10(val) / std::log10(50000);
+                    case 8:
+                        return (std::log2)(val);
+                    case 9:
+                        return (std::log)(val);
+                    case 11:
+                        return 10.0 * std::log10(val);
+                    case 12:
+                        return 2.0 * std::log10(val);
+                    case 13:
+                        return 20.0 * std::log10(val);
+                    case 14:
+                        return std::log10(val) / std::log10(3);
+                    case 15:
+                        return 0.5 * (std::log)(val);
+                    case 16:  // API Gravity
+                        return 141.5 / (val)-131.5;
+                    case 17:  // degree Baume Light
+                        return 140.0 / val - 130;
+                    case 18:  // degree Baume Heavy
+                        return 145.0 * (1.0 - 1.0 / val);
+                    case 22:  // saffir simpson hurricane scale from wind speed
+                    {  // using horners method on polynomial approximation of
+                       // saffir-simpson wind speed scale
+                        double out = 1.75748569529e-10;
+                        out = std::fma(out, val, -9.09204303833e-08);
+                        out = std::fma(out, val, 1.52274455780e-05);
+                        out = std::fma(out, val, -7.73787973277e-04);
+                        out = std::fma(out, val, 2.81978682167e-02);
+                        out = std::fma(out, val, -6.67563481438e-01);
+                        return out;
+                    }
+                    case 23: {  // Beaufort wind scale
+                        double out = 2.18882896425e-08;
+                        out = std::fma(out, val, -4.78236313769e-06);
+                        out = std::fma(out, val, 3.91121840061e-04);
+                        out = std::fma(out, val, -1.52427367162e-02);
+                        out = std::fma(out, val, 4.24089585061e-01);
+                        out = std::fma(out, val, 4.99241689370e-01);
+                        return out;
+                    }
+                    case 24:  // fujita scale
+                        return std::pow(val / 14.1, 2.0 / 3.0) - 2.0;
+                    case 27:  // prism diopter
+                        return 100.0 * std::tan(val);
+                    case 29:  // moment magnitude scale
+                        return 2.0 / 3.0 * std::log10(val) - 10.7;
+                    case 30:  // energy magnitude scale
+                        return 2.0 / 3.0 * std::log10(val) - 3.2;
+                    default:
+                        return val;
+                }
+            }
+            else
+            {
+                std::runtime_error("to be implemented...\n");
+                return constants::invalid_conversion;
             }
         }
     }  // namespace equations
@@ -1621,8 +1639,8 @@ constexpr bool is_temperature(const unit& utest)
 namespace detail {
 
     /// Convert a temperature value from one unit base to another
-    template<typename UX, typename UX2>
-    double convertTemperature(double val, const UX& start, const UX2& result)
+    template<typename UX, typename UX2, typename T=double>
+    T convertTemperature(T val, const UX& start, const UX2& result)
     {
         static constexpr std::array<double, 30> biasTable{
             0.0, 0.0, 0.0, 0.0, 0.0,   0.0,   0.0, 0.0,     0.0, 0.0,
@@ -1631,43 +1649,43 @@ namespace detail {
 
         if (is_temperature(start)) {
             if (units::degF == unit_cast(start)) {
-                val = (val - 32.0) * 5.0 / 9.0;
+                val = (val - T(32.0)) * T(5.0 / 9.0);
             } else if (start.multiplier() != 1.0) {
                 if (start.multiplier() < 29.5 && start.multiplier() >= 0.0) {
-                    val = val * start.multiplier() +
-                        biasTable[static_cast<int>(start.multiplier())];
+                    val = val * T(start.multiplier() +
+                        biasTable[static_cast<int>(start.multiplier())]);
                 } else {
-                    val = val * start.multiplier();
+                    val = val * T(start.multiplier());
                 }
             }
-            val += 273.15;
+            val =val + T(273.15);
             // convert to K
         } else {
-            val = val * start.multiplier();
+            val = val * T(start.multiplier());
         }
         if (is_temperature(result)) {
-            val -= 273.15;
+            val = val - T(273.15);
             if (units::degF == unit_cast(result)) {
-                val *= 9.0 / 5.0;
-                val += 32.0;
+                val = val * T(9.0 / 5.0);
+                val = val + T(32.0);
             } else if (result.multiplier() != 1.0) {
                 if (result.multiplier() < 29.5 && result.multiplier() >= 0.0) {
                     val = (val -
-                           biasTable[static_cast<int>(result.multiplier())]) /
-                        result.multiplier();
+                           T(biasTable[static_cast<int>(result.multiplier())])) /
+                        T(result.multiplier());
                 } else {
-                    val = val / result.multiplier();
+                    val = val / T(result.multiplier());
                 }
             }
             return val;
         }
-        return val / result.multiplier();
+        return val / T(result.multiplier());
     }
 
     /// Convert some flagged units from one type to another
-    template<typename UX, typename UX2>
-    double convertFlaggedUnits(
-        double val,
+    template<typename UX, typename UX2, typename T=double>
+    T convertFlaggedUnits(
+        T val,
         const UX& start,
         const UX2& result,
         double basis = constants::invalid_conversion)
@@ -1677,22 +1695,22 @@ namespace detail {
         }
         if (start.has_same_base(precise::pressure::psi.base_units())) {
             if (start.has_e_flag() == result.has_e_flag()) {
-                return val * start.multiplier() / result.multiplier();
+                return val * T(start.multiplier() / result.multiplier());
             }
             if (start.has_e_flag()) {
                 if (std::isnan(basis)) {
-                    return (val * start.multiplier() +
-                            precise::pressure::atm.multiplier()) /
-                        result.multiplier();
+                    return (val * T(start.multiplier()) +
+                            T(precise::pressure::atm.multiplier())) /
+                        T(result.multiplier());
                 }
-                return (val + basis) * start.multiplier() / result.multiplier();
+                return (val + T(basis)) * T(start.multiplier() / result.multiplier());
             }
             if (std::isnan(basis)) {
-                return (val * start.multiplier() -
-                        precise::pressure::atm.multiplier()) /
-                    result.multiplier();
+                return (val * T(start.multiplier()) -
+                        T(precise::pressure::atm.multiplier())) /
+                    T(result.multiplier());
             }
-            return (val * start.multiplier() / result.multiplier()) - basis;
+            return (val * T(start.multiplier() / result.multiplier())) - T(basis);
         }
         return constants::invalid_conversion;
     }
@@ -1765,8 +1783,9 @@ namespace puconversion {
     }
 
     /// Generate some known conversion between power system per unit values
-    inline double knownConversions(
-        double val,
+    template<typename T>
+    inline T knownConversions(
+        T val,
         const detail::unit_data& start,
         const detail::unit_data& result)
     {
@@ -1775,7 +1794,7 @@ namespace puconversion {
                 result.has_same_base(puA.base_units())) {  // V^2/R assuming
                                                            // voltage=1.0 pu; or
                                                            // //I=V/R
-                return 1.0 / val;
+                return T(1.0) / val;
             }
         } else if (start.has_same_base(puA.base_units())) {
             if (result.has_same_base(puMW.base_units())) {  // P=IV assuming
@@ -1787,7 +1806,7 @@ namespace puconversion {
                     puOhm.base_units())) {  // P=IV assuming
                                             // voltage=1.0 pu or
                                             // //R=V/I
-                return 1.0 / val;
+                return T(1.0) / val;
             }
         } else if (start.has_same_base(
                        puMW.base_units())) {  // P=IV, or P=V^2/R
@@ -1796,7 +1815,7 @@ namespace puconversion {
                 return val;
             }
             if (result.has_same_base(puOhm.base_units())) {
-                return 1.0 / val;
+                return T(1.0) / val;
             }
         }
         return constants::invalid_conversion;
@@ -1852,9 +1871,9 @@ namespace detail {
     all counting units but have different assumptions so while they are
     convertible they need to be handled differently
     */
-    template<typename UX, typename UX2>
-    inline double
-        convertCountingUnits(double val, const UX& start, const UX2& result)
+    template<typename UX, typename UX2, typename T=double>
+    inline T
+        convertCountingUnits(T val, const UX& start, const UX2& result)
     {
         auto base_start = start.base_units();
         auto base_result = result.base_units();
@@ -1867,7 +1886,7 @@ namespace detail {
         auto mol_result = base_result.mole();
         if (mol_start == mol_result && rad_start == rad_result &&
             (count_start == 0 || count_result == 0)) {
-            val = val * start.multiplier() / result.multiplier();
+            val = val * T(start.multiplier() / result.multiplier());
             return val;
         }
 
@@ -1889,10 +1908,10 @@ namespace detail {
             if (muxIndex < 0 || muxIndex > 4) {
                 return constants::invalid_conversion;
             }
-            val *= muxrad[muxIndex];
+            val = val * T(muxrad[muxIndex]);
             // either 1 or the other is 0 in this equation other it would have
             // triggered before or not gotten here
-            val = val * start.multiplier() / result.multiplier();
+            val = val * T(start.multiplier() / result.multiplier());
             return val;
         }
         if (rad_start == rad_result &&
@@ -1909,10 +1928,10 @@ namespace detail {
             if (muxIndex < 0 || muxIndex > 2) {
                 return constants::invalid_conversion;
             }
-            val *= muxmol[muxIndex];
+            val = val * T(muxmol[muxIndex]);
             // either 1 or the other is 0 in this equation other it would have
             // triggered before or not gotten here
-            val = val * start.multiplier() / result.multiplier();
+            val = val * T(start.multiplier() / result.multiplier());
             return val;
         }
         return constants::invalid_conversion;
@@ -1920,39 +1939,39 @@ namespace detail {
     // radians converted to mole is kind of dumb, theoretically possible but
     // probably shouldn't be supported
 
-    template<typename UX, typename UX2>
-    inline double
-        extraValidConversions(double val, const UX& start, const UX2& result)
+    template<typename UX, typename UX2,typename T=double>
+    inline T
+        extraValidConversions(T val, const UX& start, const UX2& result)
     {
         if (start.has_same_base(m.pow(3)) && result.has_same_base(J)) {
             // volume to scf or scm
-            return val * start.multiplier() *
-                precise::energy::scm.multiplier() / result.multiplier();
+            return val * T(start.multiplier() *
+                precise::energy::scm.multiplier() / result.multiplier());
         }
         if (start.has_same_base(J) && result.has_same_base(m.pow(3))) {
             // volume to scf or scm
-            return val * start.multiplier() /
-                precise::energy::scm.multiplier() / result.multiplier();
+            return val * T(start.multiplier() /
+                precise::energy::scm.multiplier() / result.multiplier());
         }
         return constants::invalid_conversion;
     }
 
-    template<typename UX, typename UX2>
-    inline double
-        otherUsefulConversions(double val, const UX& start, const UX2& result)
+    template<typename UX, typename UX2,typename T=double>
+    inline T
+        otherUsefulConversions(T val, const UX& start, const UX2& result)
     {
         if (start.base_units().kg() == result.base_units().kg()) {
             if ((start.base_units() / result.base_units())
                     .has_same_base((m / s.pow(2)).base_units())) {
                 // weight to mass
-                return val * start.multiplier() / constants::standard_gravity /
-                    result.multiplier();
+                return val * T(start.multiplier() / constants::standard_gravity /
+                    result.multiplier());
             }
             if ((result.base_units() / start.base_units())
                     .has_same_base((m / s.pow(2)).base_units())) {
                 // mass to weight
-                return val * start.multiplier() * constants::standard_gravity /
-                    result.multiplier();
+                return val * T(start.multiplier() * constants::standard_gravity /
+                    result.multiplier());
             }
         }
         if (unit_cast(start) == kilo) {
@@ -1963,7 +1982,7 @@ namespace detail {
                 return convert(val, km, result);
             }
         }
-        return constants::invalid_conversion;
+        return T(constants::invalid_conversion);
     }
 }  // namespace detail
 

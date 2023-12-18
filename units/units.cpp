@@ -3223,11 +3223,11 @@ static const std::unordered_map<std::uint64_t, precise_unit> domainSpecificUnit{
     {hashGen(domains::cooking, "TB"), precise::us::tbsp},
     {hashGen(domains::surveying, "'"), precise::us::foot},
     {hashGen(domains::surveying, "`"), precise::us::foot},
-    {hashGen(domains::surveying, u8"\u2032"), precise::us::foot},
+    {hashGen(domains::surveying, reinterpret_cast<const char*>(u8"\u2032")), precise::us::foot},
     {hashGen(domains::surveying, "''"), precise::us::inch},
     {hashGen(domains::surveying, "``"), precise::us::inch},
     {hashGen(domains::surveying, "\""), precise::us::inch},
-    {hashGen(domains::surveying, u8"\u2033"), precise::us::inch},
+    {hashGen(domains::surveying, reinterpret_cast<const char*>(u8"\u2033")), precise::us::inch},
     {hashGen(domains::nuclear, "rad"), precise::cgs::RAD},
     {hashGen(domains::nuclear, "rd"), precise::cgs::RAD},
     {hashGen(domains::climate, "kt"), precise::kilo* precise::t},
@@ -3238,11 +3238,11 @@ static const std::unordered_map<std::uint64_t, precise_unit> domainSpecificUnit{
     {hashGen(domains::us_customary, "TB"), precise::us::tbsp},
     {hashGen(domains::us_customary, "'"), precise::us::foot},
     {hashGen(domains::us_customary, "`"), precise::us::foot},
-    {hashGen(domains::us_customary, u8"\u2032"), precise::us::foot},
+    {hashGen(domains::us_customary, reinterpret_cast<const char*>(u8"\u2032")), precise::us::foot},
     {hashGen(domains::us_customary, "''"), precise::us::inch},
     {hashGen(domains::us_customary, "``"), precise::us::inch},
     {hashGen(domains::us_customary, "\""), precise::us::inch},
-    {hashGen(domains::us_customary, u8"\u2033"), precise::us::inch},
+    {hashGen(domains::us_customary, reinterpret_cast<const char*>(u8"\u2033")), precise::us::inch},
     {hashGen(domains::us_customary, "smi"),
      precise_unit(1.0 / 32.0, precise::us::tsp)},
     {hashGen(domains::us_customary, "scruple"),
@@ -4170,59 +4170,59 @@ static bool unicodeReplacement(std::string& unit_string)
 {
     static UNITS_CPP14_CONSTEXPR_OBJECT std::array<ckpair, 66>
         ucodeReplacements{{
-            ckpair{u8"\u00d7", "*"},
-            ckpair{u8"\u00f7", "/"},  // division sign
-            ckpair{u8"\u00b7", "*"},
-            ckpair{u8"\u2217", "*"},  // asterisk operator
-            ckpair{u8"\u00B5", "u"},
-            ckpair{u8"\u03BC", "u"},
-            ckpair{u8"\u00E9", "e"},
-            ckpair{u8"\u00E8", "e"},
-            ckpair{u8"\u0301", ""},  // just get rid of the accent
-            ckpair{u8"\u0300", ""},  // just get rid of the accent
-            ckpair{u8"\u2212", "-"},
-            ckpair{u8"\u2009", ""},  // thin space
-            ckpair{u8"\u2007", ""},  // thin space
-            ckpair{u8"\u202f", ""},  // narrow no break space
-            ckpair{u8"\u207B\u00B9", "^(-1)"},
-            ckpair{u8"\u207B\u00B2", "^(-2)"},
-            ckpair{u8"\u207B\u00B3", "^(-3)"},
-            ckpair{u8"\u207B\u2074", "^(-4)"},
-            ckpair{u8"\u207B\u2075", "^(-5)"},
-            ckpair{u8"\u207B\u2076", "^(-6)"},
-            ckpair{u8"\u207B\u2077", "^(-7)"},
-            ckpair{u8"\u207B\u2078", "^(-8)"},
-            ckpair{u8"\u207B\u2079", "^(-9)"},
-            ckpair{u8"-\u00B9", "^(-1)"},
-            ckpair{u8"-\u00B2", "^(-2)"},
-            ckpair{u8"-\u00B3", "^(-3)"},
-            ckpair{u8"-\u2074", "^(-4)"},
-            ckpair{u8"-\u2075", "^(-5)"},
-            ckpair{u8"-\u2076", "^(-6)"},
-            ckpair{u8"-\u2077", "^(-7)"},
-            ckpair{u8"-\u2078", "^(-8)"},
-            ckpair{u8"-\u2079", "^(-9)"},
-            ckpair{u8"\u00b9", "*"},  // superscript 1 which doesn't do
-                                      // anything
-            ckpair{u8"\u00b2", "^(2)"},
-            ckpair{u8"\u00b3", "^(3)"},
-            ckpair{u8"\u2074", "^(4)"},
-            ckpair{u8"\u2075", "^(5)"},
-            ckpair{u8"\u2076", "^(6)"},
-            ckpair{u8"\u2077", "^(7)"},
-            ckpair{u8"\u2078", "^(8)"},
-            ckpair{u8"\u2079", "^(9)"},
-            ckpair{u8"\u2215", "/"},  // Division slash
-            ckpair{u8"\u00BD", "(0.5)"},  // (1/2) fraction
-            ckpair{u8"\u00BC", "(0.25)"},  // (1/4) fraction
-            ckpair{u8"\u00BE", "(0.75)"},  // (3/4) fraction
-            ckpair{u8"\u2153", "(1/3)"},  // (1/3) fraction
-            ckpair{u8"\u2154", "(2/3)"},  // (2/3) fraction
-            ckpair{u8"\u215B", "0.125"},  // (1/8) fraction
-            ckpair{u8"\u215F", "1/"},  // 1/ numerator operator
-            ckpair{u8"\u20AC", "\x80"},  // euro sign to extended ascii
-            ckpair{u8"\u20BD", "ruble"},  // Ruble sign
-            ckpair{u8"\u01B7", "dr_ap"},  // drachm symbol
+            ckpair{"\u00f7", "/"},  // division sign
+            ckpair{("\u00d7"), "*"},
+            ckpair{("\u00b7"), "*"},
+            ckpair{("\u2217"), "*"},  // asterisk operator
+            ckpair{("\u00B5"), "u"},
+            ckpair{("\u03BC"), "u"},
+            ckpair{("\u00E9"), "e"},
+            ckpair{("\u00E8"), "e"},
+            ckpair{("\u0301"), ""},  // just get rid of the accent
+            ckpair{("\u0300"), ""},  // just get rid of the accent
+            ckpair{("\u2212"), "-"},
+            ckpair{("\u2009"), ""},  // thin space
+            ckpair{("\u2007"), ""},  // thin space
+            ckpair{("\u202f"), ""},  // narrow no break space
+            ckpair{("\u207B\u00B9"), "^(-1)"},
+            ckpair{("\u207B\u00B2"), "^(-2)"},
+            ckpair{("\u207B\u00B3"), "^(-3)"},
+            ckpair{("\u207B\u2074"), "^(-4)"},
+            ckpair{("\u207B\u2075"), "^(-5)"},
+            ckpair{("\u207B\u2076"), "^(-6)"},
+            ckpair{("\u207B\u2077"), "^(-7)"},
+            ckpair{("\u207B\u2078"), "^(-8)"},
+            ckpair{("\u207B\u2079"), "^(-9)"},
+            ckpair{("-\u00B9"), "^(-1)"},
+            ckpair{("-\u00B2"), "^(-2)"},
+            ckpair{("-\u00B3"), "^(-3)"},
+            ckpair{("-\u2074"), "^(-4)"},
+            ckpair{("-\u2075"), "^(-5)"},
+            ckpair{("-\u2076"), "^(-6)"},
+            ckpair{("-\u2077"), "^(-7)"},
+            ckpair{("-\u2078"), "^(-8)"},
+            ckpair{("-\u2079"), "^(-9)"},
+            ckpair{("\u00b9"), "*"},  // superscript 1 which doesn't do
+                                    // anything
+            ckpair{("\u00b2"), "^(2)"},
+            ckpair{("\u00b3"), "^(3)"},
+            ckpair{("\u2074"), "^(4)"},
+            ckpair{("\u2075"), "^(5)"},
+            ckpair{("\u2076"), "^(6)"},
+            ckpair{("\u2077"), "^(7)"},
+            ckpair{("\u2078"), "^(8)"},
+            ckpair{("\u2079"), "^(9)"},
+            ckpair{("\u2215"), "/"},  // Division slash
+            ckpair{("\u00BD"), "(0.5)"},  // (1/2) fraction
+            ckpair{("\u00BC"), "(0.25)"},  // (1/4) fraction
+            ckpair{("\u00BE"), "(0.75)"},  // (3/4) fraction
+            ckpair{("\u2153"), "(1/3)"},  // (1/3) fraction
+            ckpair{("\u2154"), "(2/3)"},  // (2/3) fraction
+            ckpair{("\u215B"), "0.125"},  // (1/8) fraction
+            ckpair{("\u215F"), "1/"},  // 1/ numerator operator
+            ckpair{("\u20AC"), "\x80"},  // euro sign to extended ascii
+            ckpair{("\u20BD"), "ruble"},  // Ruble sign
+            ckpair{("\u01B7"), "dr_ap"},  // drachm symbol
             ckpair{"-\xb3", "^(-3)"},
             ckpair{"-\xb9", "^(-1)"},
             ckpair{"-\xb2", "^(-2)"},
@@ -4434,7 +4434,7 @@ static bool cleanUnitString(std::string& unit_string, std::uint64_t match_flags)
             ckpair{"Hz^.5", "rootHertz"},
             ckpair{"Hz^(1/2)", "rootHertz"},
             ckpair{"Hz^1/2", "rootHertz"},
-            ckpair{u8"\u221AHz", "rootHertz"},
+            ckpair{"\u221AHz", "rootHertz"},
         }};
 
     static const std::string spchar = std::string(" \t\n\r") + '\0';
@@ -5970,7 +5970,7 @@ uncertain_measurement uncertain_measurement_from_string(
     static UNITS_CPP14_CONSTEXPR_OBJECT std::array<const char*, 9> pmsequences{
         {"+/-",
          "\xB1",
-         u8"\u00B1",
+         "\u00B1",
          "&plusmn;",
          "+-",
          "<u>+</u>",
