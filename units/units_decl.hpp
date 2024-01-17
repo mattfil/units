@@ -774,10 +774,19 @@ class unit {
 @details The class consists of a unit_base along with a 64 bit floating point
 number
 */
+
 class precise_unit {
   public:
     /// Default constructor
     // NOLINTNEXTLINE(modernize-use-equals-default)
+    //precise_unit(precise_unit&& tocopy) :
+    //    multiplier_(std::move(tocopy.multiplier_)),
+    //    base_units_(tocopy.base_units_), commodity_(tocopy.commodity_){ }
+    precise_unit& operator=(precise_unit&& tocopy) = default;
+    precise_unit& operator=(const precise_unit& tocopy) = default;
+    constexpr precise_unit(const precise_unit& tocopy) = default;
+    constexpr precise_unit(precise_unit&& tocopy) = default;
+
     constexpr precise_unit() noexcept {};
     explicit constexpr precise_unit(const detail::unit_data& base_unit) noexcept
         :
@@ -1040,6 +1049,11 @@ class precise_unit {
     constexpr bool is_default() const
     {
         return base_units_.empty() && base_units_.has_e_flag();
+    }
+    /// Check if the unit is the default unit
+    constexpr bool is_empty() const
+    {
+        return base_units_.empty();
     }
     /// Check if the unit is a per unit value
     constexpr bool is_per_unit() const { return base_units_.is_per_unit(); }
