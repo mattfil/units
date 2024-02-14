@@ -11,7 +11,6 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <string>
 #include <type_traits>
 #include <utility>
-#include "expression.h"
 
 #ifdef ENABLE_UNIT_MAP_ACCESS
 #include <unordered_map>
@@ -29,6 +28,54 @@ SPDX-License-Identifier: BSD-3-Clause
 namespace UNITS_NAMESPACE {
 /// Generate a conversion factor between two units in a constexpr function, the
 /// units will only convert if they have the same base unit
+template<typename T>
+concept hasIsNanMethod = requires(T obj) {
+    {
+        obj.isnan()
+    } -> std::same_as<void>;
+};
+
+
+template<std::size_t N>
+struct char8_t_string_literal {
+    static constexpr inline std::size_t size = N;
+    template<std::size_t... I>
+    constexpr char8_t_string_literal(
+        const char8_t (&r)[N],
+        std::index_sequence<I...>) :
+        s{r[I]...}
+    {
+    }
+    constexpr char8_t_string_literal(const char8_t (&r)[N]) :
+        char8_t_string_literal(r, std::make_index_sequence<N>())
+    {
+    }
+    //auto operator<=>(const char8_t_string_literal&) = default;
+    char8_t s[N];
+};
+
+template<char8_t_string_literal L, std::size_t... I>
+constexpr inline const char as_char_buffer[sizeof...(I)] = {
+    static_cast<char>(L.s[I])...};
+
+template<char8_t_string_literal L, std::size_t... I>
+constexpr auto& make_as_char_buffer(std::index_sequence<I...>)
+{
+    return as_char_buffer<L, I...>;
+}
+
+constexpr char operator""_as_char(char8_t c)
+{
+    return c;
+}
+
+template<char8_t_string_literal L>
+constexpr auto& operator""_as_char()
+{
+    return make_as_char_buffer<L>(
+        std::make_index_sequence<decltype(L)::size>());
+}
+
 template<typename UX, typename UX2>
 constexpr double quick_convert(UX start, UX2 result)
 {
@@ -77,11 +124,11 @@ T convert(T val, const UX& start, const UX2& result)
     if ((start.has_e_flag() || result.has_e_flag()) &&
         start.has_same_base(result.base_units())) {
         T converted_val = detail::convertFlaggedUnits(val, start, result);
-        if constexpr (std::is_same<T, double>::value) {
+        if constexpr (std::is_arithmetic_v<T>) {
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if (std::is_same<T, expression>::value) {
+        } else if constexpr (hasIsNanMethod<T>()) {
             if (!converted_val.isnan()) {
                 return converted_val;
             };
@@ -112,11 +159,11 @@ T convert(T val, const UX& start, const UX2& result)
         }
         T converted_val = puconversion::knownConversions(
             val, start.base_units(), result.base_units());
-        if constexpr (std::is_same<T, double>::value) {
+        if constexpr (std::is_arithmetic_v<T>) {
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if (std::is_same<T, expression>::value) {
+        } else if constexpr (hasIsNanMethod<T>()) {
             if (!converted_val.isnan())
                 {
                 return converted_val;
@@ -143,11 +190,11 @@ T convert(T val, const UX& start, const UX2& result)
     // deal with some counting conversions
     if (base_start.equivalent_non_counting(base_result)) {
         T converted_val = detail::convertCountingUnits(val, start, result);
-        if constexpr (std::is_same<T, double>::value) {
+        if constexpr (std::is_arithmetic_v<T>) {
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if (std::is_same<T, expression>::value) {
+        } else if constexpr (hasIsNanMethod<T>()) {
             if (!converted_val.isnan()) {
                 return converted_val;
             };
@@ -162,11 +209,11 @@ T convert(T val, const UX& start, const UX2& result)
     if (start.has_e_flag() || result.has_e_flag()) {
         T converted_val =
             detail::extraValidConversions(val, start, result);
-        if constexpr (std::is_same<T, double>::value) {
+        if constexpr (std::is_arithmetic_v<T>) {
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if (std::is_same<T, expression>::value) {
+        } else if constexpr (hasIsNanMethod<T>()) {
             if (!converted_val.isnan()) {
                 return converted_val;
             };
@@ -203,11 +250,11 @@ T convert(T val, const UX& start, const UX2& result, double baseValue)
             start.has_same_base(result.base_units())) {
             T converted_val =
                 detail::convertFlaggedUnits(val, start, result, baseValue);
-            if constexpr (std::is_same<T, double>::value) {
+            if constexpr (std::is_arithmetic_v<T>) {
                 if (!std::isnan(converted_val)) {
                     return converted_val;
                 };
-            } else if (std::is_same<T, expression>::value) {
+            } else if constexpr (hasIsNanMethod<T>()) {
                 if (!converted_val.isnan()) {
                     return converted_val;
                 };

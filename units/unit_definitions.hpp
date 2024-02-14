@@ -1120,7 +1120,7 @@ namespace precise {
         template<typename T=double>
         inline T convert_equnit_to_value(T val, const detail::unit_data& UT)
         {
-            if constexpr (std::is_same<T, double>::value) {
+            if constexpr (std::is_arithmetic_v<T>) {
                 if (!UT.is_equation()) {
                     return val;
                 }
@@ -1206,7 +1206,7 @@ namespace precise {
         template<typename T>
         inline T convert_value_to_equnit(T val, const detail::unit_data& UT)
         {
-            if constexpr (std::is_same<T, double>::value) {
+            if constexpr (std::is_arithmetic_v<T>) {
                 if (!UT.is_equation()) {
                     return val;
                 }

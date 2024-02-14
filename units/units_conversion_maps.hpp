@@ -236,8 +236,8 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"-infinity", precise::neginfinite},
         {"-INFINITY", precise::neginfinite},
         {"infinite", precise::infinite},
-        {"\u221e", precise::infinite},
-        {"-\u221e", precise::neginfinite},
+        {u8"\u221e"_as_char, precise::infinite},
+        {u8"-\u221e"_as_char, precise::neginfinite},
         {"nan", precise::nan},
         {"NaN", precise::nan},
         {"NaN%", precise::nan},
@@ -332,11 +332,10 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"%", precise::percent},
         {"%age", precise::percent},
         {"permille", precise::milli},
-        {"\u2030", precise::milli},  // per mille symbol
+        {u8"\u2030"_as_char, precise::milli},  // per mille symbol
         {"bp", precise_unit(0.1, precise::milli)},
         {"basispoint", precise_unit(0.1, precise::milli)},
-        {"\u2031",
-         precise_unit(0.1, precise::milli)},  // per ten thousand symbol
+        {u8"\u2031"_as_char, precise_unit(0.1, precise::milli)},  // per ten thousand symbol
         {"pct", precise::percent},
         {"pi", precise_unit(constants::pi, one)},
         {"PI", precise_unit(constants::pi, one)},
@@ -344,12 +343,12 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"thenumberpi", precise_unit(constants::pi, one)},
         {"[PI]", precise_unit(constants::pi, one)},
         {"Pi", precise_unit(constants::pi, one)},
-        {"\u03C0", precise_unit(constants::pi, one)},
-        {"\U0001D70B", precise_unit(constants::pi, one)},
-        {"\U0001D745", precise_unit(constants::pi, one)},
-        {"\U0001D6D1", precise_unit(constants::pi, one)},
-        {"\u03B5", precise::pu* precise::m},  // strain
-        {"\u0190", precise::pu* precise::m},  // strain
+        {u8"\u03C0"_as_char, precise_unit(constants::pi, one)},
+        {u8"\U0001D70B"_as_char, precise_unit(constants::pi, one)},
+        {u8"\U0001D745"_as_char, precise_unit(constants::pi, one)},
+        {u8"\U0001D6D1"_as_char, precise_unit(constants::pi, one)},
+        {u8"\u03B5"_as_char, precise::pu* precise::m},  // strain
+        {u8"\u0190"_as_char, precise::pu* precise::m},  // strain
         {"strain", precise::pu* precise::m},  // strain
         {"m", precise::m},
         {"Sm", precise::m},  // standard meter used in oil and gas usually Sm^3
@@ -501,8 +500,8 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"Ohm", precise::ohm},
         {"kilohm", precise::kilo* precise::ohm},  // special case allowed by SI
         {"megohm", precise::mega* precise::ohm},  // special case allowed by SI
-        {"\u03A9", precise::ohm},  // Greek Omega
-        {"\u2126", precise::ohm},  // Unicode Ohm symbol
+        {u8"\u03A9"_as_char, precise::ohm},  // Greek Omega
+        {u8"\u2126"_as_char, precise::ohm},  // Unicode Ohm symbol
         {"abOhm", precise::cgs::abOhm},
         {"abohm", precise::cgs::abOhm},
         {"statohm", precise::cgs::statOhm},
@@ -515,7 +514,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"gemmho", precise_unit(1e-6, precise::S)},
         {"MHO", precise::S},
         {"mHO", precise::S},
-        {"\u01B1", precise::S},
+        {u8"\u01B1"_as_char, precise::S},
         {"absiemen", precise_unit(1e9, precise::S)},
         {"abmho", precise_unit(1e9, precise::S)},
         {"statmho", precise_unit(1.0 / 8.987551787e11, S)},
@@ -738,7 +737,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"angularminute", precise::angle::arcmin},
         {"'", precise::angle::arcmin},
         {"`", precise::angle::arcmin},
-        {"\u2032", precise::angle::arcmin},  // single prime
+        {u8"\u2032"_as_char, precise::angle::arcmin},  // single prime
         {"minute_ang", precise::angle::arcmin},
         {"min_ang", precise::angle::arcmin},
         {"arcsecond", precise::angle::arcsec},
@@ -748,7 +747,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"asec", precise::angle::arcsec},
         {"angularsecond", precise::angle::arcsec},
         {"\"", precise::angle::arcsec},
-        {"\u2033", precise::angle::arcsec},  // double prime
+        {u8"\u2033"_as_char, precise::angle::arcsec},  // double prime
         {"second_ang", precise::angle::arcsec},
         {"sec_ang", precise::angle::arcsec},
         {"mas", precise_unit(0.001, precise::angle::arcsec)},  // milliarcsec
@@ -773,8 +772,8 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"\xB0"
          "C",
          precise::degC},
-        {"\u00B0C", precise::degC},
-        {"\u2103", precise::degC},  // direct unicode symbol
+        {u8"\u00B0C"_as_char, precise::degC},
+        {u8"\u2103"_as_char, precise::degC},  // direct unicode symbol
         {"\xB0"
          "K",
          precise::K},
@@ -814,19 +813,17 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"[hbar]", constants::hbar.as_unit()},
         {"hbar", constants::hbar.as_unit()},
         {"[H]", constants::h.as_unit()},
-        {"\u210E", constants::h.as_unit()},
-        {"\u210F",
-         precise_unit(1.0 / constants::tau, constants::h.as_unit())},
+        {u8"\u210E"_as_char, constants::h.as_unit()},
+        {u8"\u210F"_as_char, precise_unit(1.0 / constants::tau, constants::h.as_unit())},
         {"[k]", constants::k.as_unit()},
         {"[K]", constants::k.as_unit()},
         {"eps_0", constants::eps0.as_unit()},
         {"[eps_0]", constants::eps0.as_unit()},
         {"vacuumpermittivity", constants::eps0.as_unit()},
         {"[EPS_0]", constants::eps0.as_unit()},
-        {"\u03B5"
-         "0",
+        {u8"\u03B50"_as_char,
          constants::eps0.as_unit()},
-        {"\u03B5\u2080", constants::eps0.as_unit()},
+        {u8"\u03B5\u2080"_as_char, constants::eps0.as_unit()},
         {"mu_0", constants::mu0.as_unit()},
         {"[MU_0]", constants::mu0.as_unit()},
         {"[mu0]", constants::mu0.as_unit()},
@@ -918,7 +915,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"\u00A5",
          {1.0, precise::currency, commodities::currencies::yen}},  // Yen sign
         {"\xA5", precise::currency},  // Yen sign latin-1
-        {"\u0080",
+        {u8"\u0080"_as_char,
          {1.0, precise::currency, commodities::currencies::euro}},  // Euro sign
         {"\x80",
          {1.0, precise::currency, commodities::currencies::euro}},  // Euro sign
@@ -1021,9 +1018,9 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"roentgen", precise::cgs::roentgen},
         {"r\xF6ntgen", precise::cgs::roentgen},
         {"parker", precise::cgs::roentgen},
-        {"r\u00f6ntgen", precise::cgs::roentgen},
-        {"ro\u0308ntgen", precise::cgs::roentgen},
-        {"ro\u00A8ntgen", precise::cgs::roentgen},
+        {u8"r\u00f6ntgen"_as_char, precise::cgs::roentgen},
+        {u8"ro\u0308ntgen"_as_char, precise::cgs::roentgen},
+        {u8"ro\u00A8ntgen"_as_char, precise::cgs::roentgen},
         {"Roe", precise::cgs::roentgen},
         {"ROE", precise::cgs::roentgen},
         {"R", precise::cgs::roentgen},
@@ -1241,10 +1238,10 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"\u00E5ngstr\u00F6m", precise::distance::angstrom},
         {"Ao", precise::distance::angstrom},
         {"AO", precise::distance::angstrom},
-        {"\u00C5", precise::distance::angstrom},
-        {"A\u02DA", precise::distance::angstrom},
+        {u8"\u00C5"_as_char, precise::distance::angstrom},
+        {u8"A\u02DA"_as_char, precise::distance::angstrom},
         {"\xC5", precise::distance::angstrom},
-        {"\u212B", precise::distance::angstrom},  // unicode
+        {u8"\u212B"_as_char, precise::distance::angstrom},  // unicode
         {"bps", precise::bit / precise::s},
         {"baud", precise::bit / precise::s},
         {"Bd", precise::bit / precise::s},
@@ -1279,7 +1276,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
         {"g", precise::g},
         {"gm", precise::g},
         {"gamma", precise::micro* precise::g},
-        {"\u1D6FE", precise::micro* precise::g},
+        {u8"\u1D6FE"_as_char, precise::micro* precise::g},
         {"gamma{mass}", precise::micro* precise::g},
         {"gamma(mass)", precise::micro* precise::g},
         {"gamma{volume}", precise::micro* precise::L},
@@ -1813,7 +1810,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
          {"gon", precise::angle::gon},
          {"gon(grade)", precise::angle::gon},
          {"GON", precise::angle::gon},
-         {"\u25A1^g", precise::angle::gon},
+         {u8"\u25A1^g"_as_char, precise::angle::gon},
          {"^g", precise::angle::gon},
          {"grad", precise::angle::grad},
          {"gradians", precise::angle::grad},
@@ -1823,7 +1820,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
          {"degF", precise::degF},
          {"degsF", precise::degF},
          {"DEGF", precise::degF},
-         {"\u2109", precise::degF},  // direct unicode symbol
+         {u8"\u2109"_as_char, precise::degF},  // direct unicode symbol
          {"degR", precise::temperature::degR},
          {"degsR", precise::temperature::degR},
          {"DEGR", precise::temperature::degR},
@@ -2160,8 +2157,8 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
          // Gigatonne carbon
          {"C90", precise::conventional::coulomb90},
          {"ohm90", precise::conventional::ohm90},
-         {"\u03A990", precise::conventional::ohm90},  // Greek Omega
-         {"\u212690", precise::conventional::ohm90},  // Unicode Ohm symbol
+         {u8"\u03A990"_as_char, precise::conventional::ohm90},  // Greek Omega
+         {u8"\u212690"_as_char, precise::conventional::ohm90},  // Unicode Ohm symbol
          {"A90", precise::conventional::ampere90},
          {"V90", precise::conventional::volt90},
          {"W90", precise::conventional::watt90},
@@ -2169,8 +2166,9 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
          {"H90", precise::conventional::henry90},
          {"C_90", precise::conventional::coulomb90},
          {"ohm_90", precise::conventional::ohm90},
-         {"\u03A9_90", precise::conventional::ohm90},  // Greek Omega
-         {"\u2126_90", precise::conventional::ohm90},  // Unicode Ohm symbol
+         {u8"\u03A9_90"_as_char, precise::conventional::ohm90},  // Greek Omega
+         {u8"\u2126_90"_as_char,
+          precise::conventional::ohm90},  // Unicode Ohm symbol
          {"A_90", precise::conventional::ampere90},
          {"V_90", precise::conventional::volt90},
          {"W_90", precise::conventional::watt90},
@@ -2333,7 +2331,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
          {"[LB_TR]", precise::troy::pound},
          {"pound-troy", precise::troy::pound},
          {"pound", precise::lb},
-         {u8"\u2114", precise::lb},
+         {u8"\u2114"_as_char, precise::lb},
          {"solarmass", constants::planetary::mass::solar.as_unit()},
          {"solarmasses", constants::planetary::mass::solar.as_unit()},
          {"jupitermass", constants::planetary::mass::jupiter.as_unit()},
@@ -2384,7 +2382,7 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
          {"oz_FL", precise::us::floz},
          {"oz", precise::oz},
          {"OZ", precise::oz},
-         {"\u2125", precise::oz},
+         {u8"\u2125"_as_char, precise::oz},
          {"gr", precise::i::grain},
          {"[GR]", precise::i::grain},
          {"grain", precise::i::grain},
@@ -2479,9 +2477,9 @@ UNITS_CPP14_CONSTEXPR_OBJECT std::array<
          {"SC_AP", precise::apothecaries::scruple},
          {"scruple", precise::apothecaries::scruple},
          {"scruple_ap", precise::apothecaries::scruple},
-         {"\u2108", precise::apothecaries::scruple},
+         {u8"\u2108"_as_char, precise::apothecaries::scruple},
          {"dr_ap", precise::apothecaries::drachm},
-         {"\u0292", precise::apothecaries::drachm},
+         {u8"\u0292"_as_char, precise::apothecaries::drachm},
          {"dram_ap", precise::apothecaries::drachm},
          {"dram_US", precise::apothecaries::drachm},
          {"drachm_br", precise::apothecaries::drachm},
@@ -2916,10 +2914,10 @@ std::array<std::pair<const char*, precise_unit>, 247> defined_measurement_types{
         {"electriccurrent", precise::A},
         {"magnetomotiveforce", precise::A},
         {"temperature", precise::K},
-        {"\u2C90", precise::K},
-        {"\u2129", precise::K},
-        {"\u03F4", precise::K},
-        {"\u0398", precise::K},
+        {u8"\u2C90"_as_char, precise::K},
+        {u8"\u2129"_as_char, precise::K},
+        {u8"\u03F4"_as_char, precise::K},
+        {u8"\u0398"_as_char, precise::K},
         {"celsiustemperature", precise::degC},
         {"temp", precise::K},
         {"thermodynamictemperature", precise::K},
