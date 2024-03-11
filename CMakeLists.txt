@@ -27,7 +27,9 @@ project(
     VERSION 0.9.1
 )
 include(CMakeDependentOption)
-include(CTest)
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    include(CTest)
+endif()
 include(GNUInstallDirs)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND NOT DEFINED CMAKE_CXX_STANDARD)
@@ -113,7 +115,7 @@ mark_as_advanced(UNITS_CLANG_TIDY_OPTIONS)
 mark_as_advanced(UNITS_CLANG_TIDY)
 
 option(UNITS_HEADER_ONLY "Expose the units library as header-only" OFF)
-
+message(${UNITS_HEADER_ONLY} " ->units build as header only pkg")
 if(NOT TARGET compile_flags_target)
     add_library(compile_flags_target INTERFACE)
 endif()
@@ -125,7 +127,7 @@ endif()
 # deal with breaking changes in C++20 with u8 strings
 if(CMAKE_CXX_STANDARD GREATER 19 OR UNITS_CXX_STANDARD GREATER 19)
     if(MSVC)
-        target_compile_options(compile_flags_target INTERFACE /Zc:char8_t-)
+        target_compile_options(compile_flags_target INTERFACE /Zc:char8_t)
     else(MSVC)
         target_compile_options(compile_flags_target INTERFACE -fno-char8_t)
     endif()

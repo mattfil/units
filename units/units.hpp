@@ -25,16 +25,23 @@ SPDX-License-Identifier: BSD-3-Clause
 #define UNITS_CPP14_CONSTEXPR_METHOD
 #endif
 
+//#if defined(__cpp_char8_t)
+//#define U8(x) u8##x##
+//#else
+//#define U8(x) u8##x
+//#endif
+//#define  = ""
 namespace UNITS_NAMESPACE {
-/// Generate a conversion factor between two units in a constexpr function, the
-/// units will only convert if they have the same base unit
+
+
+///// Generate a conversion factor between two units in a constexpr function, the
+///// units will only convert if they have the same base unit
 template<typename T>
 concept hasIsNanMethod = requires(T obj) {
     {
         obj.isnan()
     } -> std::same_as<void>;
 };
-
 
 template<std::size_t N>
 struct char8_t_string_literal {
@@ -75,6 +82,13 @@ constexpr auto& operator""_as_char()
     return make_as_char_buffer<L>(
         std::make_index_sequence<decltype(L)::size>());
 }
+
+
+#if defined(__cpp_char8_t)
+#define U8(x) u8##x##_as_char
+#else
+#define U8(x) u8##x
+#endif
 
 template<typename UX, typename UX2>
 constexpr double quick_convert(UX start, UX2 result)
@@ -128,7 +142,7 @@ T convert(T val, const UX& start, const UX2& result)
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if constexpr (hasIsNanMethod<T>()) {
+        } else if constexpr (hasIsNanMethod<T>) {
             if (!converted_val.isnan()) {
                 return converted_val;
             };
@@ -163,7 +177,7 @@ T convert(T val, const UX& start, const UX2& result)
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if constexpr (hasIsNanMethod<T>()) {
+        } else if constexpr (hasIsNanMethod<T>) {
             if (!converted_val.isnan())
                 {
                 return converted_val;
@@ -194,7 +208,7 @@ T convert(T val, const UX& start, const UX2& result)
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if constexpr (hasIsNanMethod<T>()) {
+        } else if constexpr (hasIsNanMethod<T>) {
             if (!converted_val.isnan()) {
                 return converted_val;
             };
@@ -213,7 +227,7 @@ T convert(T val, const UX& start, const UX2& result)
             if (!std::isnan(converted_val)) {
                 return converted_val;
             };
-        } else if constexpr (hasIsNanMethod<T>()) {
+        } else if constexpr (hasIsNanMethod<T>) {
             if (!converted_val.isnan()) {
                 return converted_val;
             };
@@ -254,7 +268,7 @@ T convert(T val, const UX& start, const UX2& result, double baseValue)
                 if (!std::isnan(converted_val)) {
                     return converted_val;
                 };
-            } else if constexpr (hasIsNanMethod<T>()) {
+            } else if constexpr (hasIsNanMethod<T>) {
                 if (!converted_val.isnan()) {
                     return converted_val;
                 };
@@ -394,11 +408,11 @@ class measurement {
     }
     measurement operator%(const measurement& other) const
     {
-        return {fmod(value_, other.value_as(units_)), units_};
+        return {std::fmod(value_, other.value_as(units_)), units_};
     }
     measurement operator%(double val) const
     {
-        return {fmod(value_, val), units_};
+        return {std::fmod(value_, val), units_};
     }
     measurement operator+(const measurement& other) const
     {

@@ -121,6 +121,7 @@ elseif(UNITS_BUILD_OBJECT_LIBRARY)
         target_compile_definitions(units PRIVATE -DUNITS_CONSTEXPR_IF_SUPPORTED=1)
     endif()
 elseif(UNITS_BUILD_STATIC_LIBRARY)
+    message("Units static lib")
     add_library(units STATIC ${units_source_files} ${units_header_files})
     target_include_directories(
         units
@@ -171,35 +172,37 @@ elseif(UNITS_BUILD_STATIC_LIBRARY)
     message(STATUS "adding library ${UNITS_LC_PROJECT_NAME}::units")
 endif()
 
-# add the header only interface library
-add_library(header_only INTERFACE)
-target_include_directories(
-    header_only INTERFACE $<BUILD_INTERFACE:${${UNITS_CMAKE_PROJECT_NAME}_SOURCE_DIR}>
-                          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-target_compile_definitions(header_only INTERFACE UNITS_HEADER_ONLY)
-if(UNITS_INSTALL AND NOT UNITS_BINARY_ONLY_INSTALL)
-    install(TARGETS header_only ${UNITS_LIBRARY_EXPORT_COMMAND})
-endif()
-if(UNITS_NAMESPACE)
-    target_compile_definitions(
-        header_only INTERFACE -DUNITS_NAMESPACE=${UNITS_NAMESPACE}
+if(UNITS_HEADER_ONLY)
+    # add the header only interface library
+    add_library(header_only INTERFACE)
+    target_include_directories(
+        header_only INTERFACE $<BUILD_INTERFACE:${${UNITS_CMAKE_PROJECT_NAME}_SOURCE_DIR}>
+                              $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
-endif()
-if(UNITS_BASE_TYPE)
-    target_compile_definitions(
-        header_only INTERFACE -DUNITS_BASE_TYPE=${UNITS_BASE_TYPE}
-    )
-endif()
-add_library(${UNITS_LC_PROJECT_NAME}::header_only ALIAS header_only)
+    target_compile_definitions(header_only INTERFACE UNITS_HEADER_ONLY)
+    if(UNITS_INSTALL AND NOT UNITS_BINARY_ONLY_INSTALL)
+        install(TARGETS header_only ${UNITS_LIBRARY_EXPORT_COMMAND})
+    endif()
+    if(UNITS_NAMESPACE)
+        target_compile_definitions(
+            header_only INTERFACE -DUNITS_NAMESPACE=${UNITS_NAMESPACE}
+        )
+    endif()
+    if(UNITS_BASE_TYPE)
+        target_compile_definitions(
+            header_only INTERFACE -DUNITS_BASE_TYPE=${UNITS_BASE_TYPE}
+        )
+    endif()
+    add_library(${UNITS_LC_PROJECT_NAME}::header_only ALIAS header_only)
 
-if(UNITS_INSTALL AND NOT UNITS_BINARY_ONLY_INSTALL)
-    install(FILES ${units_header_files}
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${UNITS_LC_PROJECT_NAME}
-    )
-    if(UNITS_BUILD_SHARED_LIBRARY OR BUILD_SHARED_LIBS)
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/units_export.h
+    if(UNITS_INSTALL AND NOT UNITS_BINARY_ONLY_INSTALL)
+        install(FILES ${units_header_files}
                 DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${UNITS_LC_PROJECT_NAME}
         )
+        if(UNITS_BUILD_SHARED_LIBRARY OR BUILD_SHARED_LIBS)
+            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/units_export.h
+                    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${UNITS_LC_PROJECT_NAME}
+            )
+        endif()
     endif()
 endif()
