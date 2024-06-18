@@ -113,11 +113,10 @@ namespace detail {
             unsigned int iflag,
             unsigned int eflag,
             unsigned int equation) :
-            meter_(meters),
-            second_(seconds), kilogram_(kilograms), ampere_(amperes),
-            candela_(candelas), kelvin_(kelvins), mole_(moles),
-            radians_(radians), currency_(currencys), count_(counts),
-            per_unit_(per_unit), i_flag_(iflag), e_flag_(eflag),
+            meter_(meters), second_(seconds), kilogram_(kilograms),
+            ampere_(amperes), candela_(candelas), kelvin_(kelvins),
+            mole_(moles), radians_(radians), currency_(currencys),
+            count_(counts), per_unit_(per_unit), i_flag_(iflag), e_flag_(eflag),
             equation_(equation)
         {
         }
@@ -789,8 +788,7 @@ class precise_unit {
 
     constexpr precise_unit() noexcept {};
     explicit constexpr precise_unit(const detail::unit_data& base_unit) noexcept
-        :
-        base_units_(base_unit)
+        : base_units_(base_unit)
     {
     }
 
@@ -798,8 +796,7 @@ class precise_unit {
     constexpr precise_unit(
         double mult,
         const detail::unit_data& base_unit) noexcept :
-        multiplier_(mult),
-        base_units_(base_unit)
+        multiplier_(mult), base_units_(base_unit)
     {
     }
 
@@ -808,8 +805,7 @@ class precise_unit {
         double mult,
         const detail::unit_data& base_unit,
         std::uint32_t commodity_code) noexcept :
-        multiplier_(mult),
-        base_units_(base_unit), commodity_(commodity_code)
+        multiplier_(mult), base_units_(base_unit), commodity_(commodity_code)
     {
     }
 
@@ -817,8 +813,7 @@ class precise_unit {
     explicit constexpr precise_unit(
         const detail::unit_data& base_unit,
         std::uint32_t commodity_code) noexcept :
-        base_units_(base_unit),
-        commodity_(commodity_code)
+        base_units_(base_unit), commodity_(commodity_code)
     {
     }
 

@@ -813,7 +813,6 @@ namespace precise {
         constexpr precise_unit btu_it{1055.05585262, J};  // international table
                                                           // btu
         constexpr precise_unit btu_iso{1055.06, J};  // rounded btu_it
-        constexpr precise_unit quad{1e15, btu_it};
         constexpr precise_unit tonc{12000.0, btu_th / h};
 
         constexpr precise_unit therm_us{100000.0, btu_59};
@@ -854,8 +853,8 @@ namespace precise {
             return ((static_cast<std::uint32_t>(val >> bit) & 0x1U) > 0U) ? 1 :
                                                                             0;
         }
-        constexpr auto bShiftu(std::uint16_t val, std::uint32_t bit)
-            -> unsigned int
+        constexpr auto
+            bShiftu(std::uint16_t val, std::uint32_t bit) -> unsigned int
         {
             return ((static_cast<std::uint32_t>(val >> bit) & 0x1U) > 0U) ? 1U :
                                                                             0U;
