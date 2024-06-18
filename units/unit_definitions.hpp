@@ -1116,7 +1116,7 @@ namespace precise {
         }
 
         /// convert an equation unit to a single value
-        template<typename T=double>
+        template<detail::CMeasurableQuantity T = double>
         inline T convert_equnit_to_value(T val, const detail::unit_data& UT)
         {
             if constexpr (std::is_arithmetic_v<T>) {
@@ -1639,7 +1639,7 @@ constexpr bool is_temperature(const unit& utest)
 namespace detail {
 
     /// Convert a temperature value from one unit base to another
-    template<typename UX, typename UX2, typename T=double>
+    template<typename UX, typename UX2, CMeasurableQuantity T = double>
     T convertTemperature(T val, const UX& start, const UX2& result)
     {
         static constexpr std::array<double, 30> biasTable{
@@ -1683,7 +1683,7 @@ namespace detail {
     }
 
     /// Convert some flagged units from one type to another
-    template<typename UX, typename UX2, typename T=double>
+    template<typename UX, typename UX2, CMeasurableQuantity T = double>
     T convertFlaggedUnits(
         T val,
         const UX& start,
@@ -1783,7 +1783,7 @@ namespace puconversion {
     }
 
     /// Generate some known conversion between power system per unit values
-    template<typename T>
+    template<detail::CMeasurableQuantity T>
     inline T knownConversions(
         T val,
         const detail::unit_data& start,
@@ -1871,7 +1871,7 @@ namespace detail {
     all counting units but have different assumptions so while they are
     convertible they need to be handled differently
     */
-    template<typename UX, typename UX2, typename T=double>
+    template<typename UX, typename UX2, detail::CMeasurableQuantity T = double>
     inline T
         convertCountingUnits(T val, const UX& start, const UX2& result)
     {
@@ -1939,7 +1939,7 @@ namespace detail {
     // radians converted to mole is kind of dumb, theoretically possible but
     // probably shouldn't be supported
 
-    template<typename UX, typename UX2,typename T=double>
+    template<typename UX, typename UX2, detail::CMeasurableQuantity T = double>
     inline T
         extraValidConversions(T val, const UX& start, const UX2& result)
     {

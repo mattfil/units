@@ -43,6 +43,7 @@ concept hasIsNanMethod = requires(T obj) {
     } -> std::same_as<void>;
 };
 
+
 template<std::size_t N>
 struct char8_t_string_literal {
     static constexpr inline std::size_t size = N;
@@ -122,7 +123,7 @@ double convert(const UX& start, const UX2& result)
 }
 
 /// Convert a value from one unit base to another
-template<typename UX, typename UX2, typename T=double>
+template<typename UX, typename UX2, detail::CMeasurableQuantity T = double>
 T convert(T val, const UX& start, const UX2& result)
 {
     static_assert(
@@ -240,7 +241,7 @@ T convert(T val, const UX& start, const UX2& result)
 
 /// Convert a value from one unit base to another potentially involving pu base
 /// values
-template<typename UX, typename UX2,typename T=double>
+template<typename UX, typename UX2, detail::CMeasurableQuantity T = double>
 T convert(T val, const UX& start, const UX2& result, double baseValue)
 {
     static_assert(
@@ -295,7 +296,7 @@ T convert(T val, const UX& start, const UX2& result, double baseValue)
 
 /// Convert a value from one unit base to another involving power system units
 /// the basePower and base voltage are used as the basis values
-template<typename UX, typename UX2,typename T=double>
+template<typename UX, typename UX2, detail::CMeasurableQuantity T = double>
 T convert(
     T val,
     const UX& start,

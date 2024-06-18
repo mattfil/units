@@ -28,6 +28,15 @@ SPDX-License-Identifier: BSD-3-Clause
 namespace UNITS_NAMESPACE {
 namespace detail {
 
+    template<typename T>
+    concept CMeasurableQuantity = requires(T a, T b) {
+        { a + b } -> std::same_as<T>;
+        { a - b } -> std::same_as<T>;
+        T(static_cast<double>(0));
+        T(static_cast<const double&>(0));
+        T(static_cast<double&&>(0));
+    };
+
     constexpr int32_t maxNeg(uint32_t numberOfBits)
     {
         return -(static_cast<int32_t>(1U << (numberOfBits - 1)));
